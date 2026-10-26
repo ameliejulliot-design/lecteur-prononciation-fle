@@ -1,0 +1,175 @@
+
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Prononciation - Les salutations</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      color: #293d34;
+      background: #ffffff;
+      margin: 0;
+      padding: 24px;
+    }
+
+    .lecteur {
+      max-width: 560px;
+      margin: auto;
+    }
+
+    h1 {
+      font-size: 25px;
+      margin-bottom: 8px;
+    }
+
+    .intro {
+      color: #68776f;
+      margin-bottom: 22px;
+      font-size: 15px;
+    }
+
+    .phrase {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 15px 0;
+      border-bottom: 1px solid #e5ebe7;
+    }
+
+    .lecture {
+      flex-shrink: 0;
+      width: 42px;
+      height: 42px;
+      border: none;
+      border-radius: 50%;
+      background: #e5f0e8;
+      color: #28634c;
+      font-size: 17px;
+      cursor: pointer;
+    }
+
+    .lecture:hover {
+      background: #d2e5d8;
+    }
+
+    .texte {
+      font-size: 16px;
+      font-weight: 600;
+      line-height: 1.5;
+    }
+
+    .aide {
+      font-size: 13px;
+      color: #68776f;
+      margin-top: 3px;
+    }
+  </style>
+</head>
+
+<body>
+  <main class="lecteur">
+    <h1>Prononciation - Les salutations</h1>
+    <p class="intro">
+      Clique sur ▶ pour écouter, puis répète à voix haute.
+    </p>
+
+    <div class="phrase">
+      <button class="lecture" data-fichier="commentondit.mp3"
+        aria-label="Écouter Comment on dit">▶</button>
+      <div>
+        <div class="texte">Comment on dit… ?</div>
+        <div class="aide">Pour demander un mot en français</div>
+      </div>
+    </div>
+
+    <div class="phrase">
+      <button class="lecture" data-fichier="parlerlentement.mp3"
+        aria-label="Écouter Parlez lentement">▶</button>
+      <div>
+        <div class="texte">Parlez lentement, s’il vous plaît.</div>
+        <div class="aide">Pour demander de parler moins vite</div>
+      </div>
+    </div>
+
+    <div class="phrase">
+      <button class="lecture" data-fichier="peuxrepeter.mp3"
+        aria-label="Écouter Vous pouvez répéter">▶</button>
+      <div>
+        <div class="texte">Vous pouvez répéter ?</div>
+        <div class="aide">Pour demander de répéter</div>
+      </div>
+    </div>
+
+    <div class="phrase">
+      <button class="lecture" data-fichier="prononce.mp3"
+        aria-label="Écouter Prononcez">▶</button>
+      <div>
+        <div class="texte">Prononcez, s’il vous plaît.</div>
+        <div class="aide">Pour demander la prononciation</div>
+      </div>
+    </div>
+
+    <div class="phrase">
+      <button class="lecture" data-fichier="jenecomprendspas.mp3"
+        aria-label="Écouter Je ne comprends pas">▶</button>
+      <div>
+        <div class="texte">Je ne comprends pas.</div>
+        <div class="aide">Pour exprimer une difficulté</div>
+      </div>
+    </div>
+
+    <audio id="audio" preload="none"></audio>
+  </main>
+
+  <script>
+    const audio = document.getElementById("audio");
+    const boutons = document.querySelectorAll(".lecture");
+    let boutonActif = null;
+
+    function remettreBoutonsAZero() {
+      boutons.forEach(bouton => bouton.textContent = "▶");
+    }
+
+    boutons.forEach(bouton => {
+      bouton.addEventListener("click", async () => {
+        const fichier = bouton.dataset.fichier;
+
+        if (boutonActif === bouton && !audio.paused) {
+          audio.pause();
+          bouton.textContent = "▶";
+          return;
+        }
+
+        if (boutonActif !== bouton) {
+          audio.pause();
+          audio.src = "audios/" + fichier;
+          audio.load();
+        }
+
+        remettreBoutonsAZero();
+        boutonActif = bouton;
+
+        try {
+          await audio.play();
+          bouton.textContent = "Ⅱ";
+        } catch (erreur) {
+          alert("La lecture a échoué. Vérifie que le fichier audio est bien présent dans le dossier audios.");
+          boutonActif = null;
+          remettreBoutonsAZero();
+        }
+      });
+    });
+
+    audio.addEventListener("ended", () => {
+      remettreBoutonsAZero();
+      boutonActif = null;
+    });
+
+    audio.addEventListener("pause", () => {
+      if (boutonActif) boutonActif.textContent = "▶";
+    });
+  </script>
+</body>
+</html>
